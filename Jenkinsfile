@@ -34,6 +34,24 @@ pipeline {
 				echo "Integration Test"
 			}
 		}
+		stage('Build Docker Image'){
+			steps{
+				//"docker build -t in28min/currency-exchange-devops:$env.BUILD_TAG"
+				script{
+					dockerImage = docker.build("nandanayak/currency-exchange-devops:${env.BUILD_TAG}")
+				}
+			}
+		}
+		stage('Push Docker Image'){
+			steps{
+				script{
+					docker.withRegistry('','Dockerhub'){
+						dockerImage.push();
+						dockerImage.push('latest');
+					}
+				}
+			}
+		}
 	} 
 	post{
 		always{
